@@ -1,13 +1,128 @@
 package com.example.candiatePosition.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
-@Table(name = "candidate_tbl")
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(
+        name = "candidate_tbl",
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"email_id"})
+        }
+)
 public class Candidate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Integer candidateId;
+    private Long candidateId;
 
+    private String name;
+
+    public String mobileNumber;
+
+    private String age;
+
+    private String city;
+
+    private String emailId;
+
+    public boolean isCandidateExperienced;
+
+    public Integer totalYearsOfExperience;
+
+    public String previousOrganizationName;
+
+    public List<Position> getPositions() {
+        return positions;
+    }
+
+    public void setPositions(List<Position> positions) {
+        this.positions = positions;
+    }
+
+    @ManyToMany
+    @JoinTable(
+            name = "candidate_position",
+            joinColumns = @JoinColumn(name = "candidate_id"),
+            inverseJoinColumns = @JoinColumn(name = "position_id")
+    )
+    private List<Position> positions;
+
+
+    public Long getCandidateId() {
+        return candidateId;
+    }
+
+    public void setCandidateId(Long candidateId) {
+        this.candidateId = candidateId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getMobileNumber() {
+        return mobileNumber;
+    }
+
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getEmailId() {
+        return emailId;
+    }
+
+    public void setEmailId(String emailId) {
+        this.emailId = emailId;
+    }
+
+    public boolean isCandidateExperienced() {
+        return isCandidateExperienced;
+    }
+
+    public void setCandidateExperienced(boolean candidateExperienced) {
+        isCandidateExperienced = candidateExperienced;
+    }
+
+    public Integer getTotalYearsOfExperience() {
+        return totalYearsOfExperience;
+    }
+
+    public void setTotalYearsOfExperience(Integer totalYearsOfExperience) {
+        this.totalYearsOfExperience = totalYearsOfExperience;
+    }
+
+    public String getPreviousOrganizationName() {
+        return previousOrganizationName;
+    }
+
+    public void setPreviousOrganizationName(String previousOrganizationName) {
+        this.previousOrganizationName = previousOrganizationName;
+    }
 }
