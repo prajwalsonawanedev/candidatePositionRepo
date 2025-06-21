@@ -8,7 +8,7 @@ public class CandidatePositionApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(CandidatePositionApplication.class, args);
-        System.out.println("Application Started SuccessfullyA");
+        System.out.println("Application Started Successfully");
     }
 
 }

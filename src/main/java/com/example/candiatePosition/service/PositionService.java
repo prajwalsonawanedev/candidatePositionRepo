@@ -1,15 +1,21 @@
 package com.example.candiatePosition.service;
 
 import com.example.candiatePosition.dto.PositionRequestDto;
-import com.example.candiatePosition.dto.PositionResponseDto;
+import com.example.candiatePosition.response.ApiResponse;
 
 import java.util.List;
 
 public interface PositionService {
 
-    PositionResponseDto savePosition(PositionRequestDto positionDto);
+    ApiResponse savePosition(PositionRequestDto positionDto);
 
-    PositionResponseDto getPositionById(Long positionId);
+    ApiResponse getPositionById(Long positionId);
 
-    List<PositionResponseDto> getAllPositions();
+    ApiResponse getAllPositions();
+
+    ApiResponse deleteById(Long positionId);
+
+    ApiResponse updatePositionDetails(Long positionId, PositionRequestDto positionDto);
+
+
 }

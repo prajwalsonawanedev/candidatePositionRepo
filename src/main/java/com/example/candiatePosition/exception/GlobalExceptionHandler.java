@@ -28,5 +28,11 @@ public class GlobalExceptionHandler {
         error.put("errorMessage", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
-}
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Map<String, String>> handelRuntimeException(RuntimeException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("errorMessage", ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+    }
+}

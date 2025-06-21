@@ -1,5 +1,6 @@
 package com.example.candiatePosition.dto;
 
+import com.example.candiatePosition.anotation.NullOrNotBlank;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ public class PositionRequestDto {
     public Long positionId;
 
     @JsonProperty("positionName")
+    @NullOrNotBlank(min = 5, max = 50, message = "Position Name required and must be between {min} and {max} characters", isMandatory = "yes")
     public String name;
 
     @JsonProperty("positionDescription")

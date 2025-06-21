@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -37,13 +38,7 @@ public class Candidate {
 
     public String previousOrganizationName;
 
-    public List<Position> getPositions() {
-        return positions;
-    }
-
-    public void setPositions(List<Position> positions) {
-        this.positions = positions;
-    }
+    public LocalDate dateOfBirth;
 
     @ManyToMany
     @JoinTable(
@@ -53,6 +48,14 @@ public class Candidate {
     )
     private List<Position> positions;
 
+
+    public List<Position> getPositions() {
+        return positions;
+    }
+
+    public void setPositions(List<Position> positions) {
+        this.positions = positions;
+    }
 
     public Long getCandidateId() {
         return candidateId;
@@ -125,4 +128,13 @@ public class Candidate {
     public void setPreviousOrganizationName(String previousOrganizationName) {
         this.previousOrganizationName = previousOrganizationName;
     }
+
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
+
+    public void setDateOfBirth(LocalDate dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
+    }
+
 }
