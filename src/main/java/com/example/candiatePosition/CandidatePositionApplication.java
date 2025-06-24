@@ -9,6 +9,7 @@ public class CandidatePositionApplication {
     public static void main(String[] args) {
         SpringApplication.run(CandidatePositionApplication.class, args);
         System.out.println("Application Started Successfully");
+        System.out.println("branch is created for working code");
     }
 
 }
