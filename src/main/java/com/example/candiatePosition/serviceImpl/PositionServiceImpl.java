@@ -5,12 +5,16 @@ import com.example.candiatePosition.dto.PositionResponseDto;
 import com.example.candiatePosition.entity.Position;
 import com.example.candiatePosition.exception.ResourceNotFoundException;
 import com.example.candiatePosition.repository.PositionRepository;
+import com.example.candiatePosition.response.ApiResponse;
 import com.example.candiatePosition.service.PositionService;
 import com.example.candiatePosition.util.EntityDtoConverter;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PositionServiceImpl implements PositionService {
@@ -25,27 +29,86 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public PositionResponseDto savePosition(PositionRequestDto positionDto) {
+    public ApiResponse savePosition(PositionRequestDto positionDto) {
         Position position = entityDtoConverter.convert(positionDto, Position.class);
+
         if (!ObjectUtils.isEmpty(position)) {
-            return entityDtoConverter.convert(positionRepository.save(position), PositionResponseDto.class);
+            try {
+                PositionResponseDto positionResponseDto = entityDtoConverter.convert(positionRepository.save(position), PositionResponseDto.class);
+                return ApiResponse.response("Position Created Successfully", true, positionResponseDto);
+            } catch (Exception exception) {
+                throw new RuntimeException("Please Provide Valid position name");
+            }
         }
-        return null;
+        return ApiResponse.response("Unable to crate position", false, null);
     }
 
     @Override
-    public PositionResponseDto getPositionById(Long positionId) {
-        return positionRepository.findById(positionId)
+    public ApiResponse getPositionById(Long positionId) {
+        PositionResponseDto positionResponseDto = positionRepository.findById(positionId)
                 .map(position -> entityDtoConverter.convert(position, PositionResponseDto.class))
                 .orElseThrow(() -> new ResourceNotFoundException("Position Not found with Position Id :" + positionId));
+
+        if (!Objects.isNull(positionResponseDto)) {
+            return ApiResponse.response("Position Details found", true, positionResponseDto);
+        }
+        return ApiResponse.response("Position Details Not found", true, null);
     }
 
     @Override
-    public List<PositionResponseDto> getAllPositions() {
-        return positionRepository.findAll()
+    public ApiResponse getAllPositions() {
+        List<PositionResponseDto> positionResponseDtoList = positionRepository.findAll()
                 .stream()
                 .map(position -> entityDtoConverter.convert(position, PositionResponseDto.class))
-                .map(position -> entityDtoConverter.convert(position, PositionResponseDto.class))
                 .toList();
+
+        if (!CollectionUtils.isEmpty(positionResponseDtoList)) {
+            return ApiResponse.response("Position Detailsfound", true, positionResponseDtoList);
+        }
+
+        return ApiResponse.response("Position Details Not found", false, null);
+    }
+
+    @Override
+    public ApiResponse deleteById(Long positionId) {
+        try {
+            positionRepository.deleteById(positionId);
+        } catch (Exception exception) {
+            throw new ResourceNotFoundException("Please provide valid position Id:" + positionId);
+        }
+        return ApiResponse.response("Succesully deleted record with Id:" + positionId, true, null);
+
+    }
+
+    @Override
+    public ApiResponse updatePositionDetails(Long positionId, PositionRequestDto positionDto) {
+
+        if (!Objects.isNull(positionDto)) {
+
+            Position positionResult = positionRepository.findById(positionId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Position Details not found for this position Id : " + positionId));
+
+            if (!StringUtils.isEmpty(positionDto.name)) {
+                positionResult.setName(positionDto.name);
+            }
+            if (!StringUtils.isEmpty(positionDto.description)) {
+                positionResult.setDescription(positionDto.description);
+            }
+            if (!StringUtils.isEmpty(positionDto.location)) {
+                positionResult.setLocation(positionDto.location);
+            }
+            if (!StringUtils.isEmpty(positionDto.department)) {
+                positionResult.setDepartment(positionDto.department);
+            }
+            if (!StringUtils.isEmpty(positionDto.employementType)) {
+                positionResult.setEmployementType(positionDto.employementType);
+            }
+
+            Position updatedPosition = positionRepository.save(positionResult);
+            return ApiResponse.response("Position details updated Sucessfully", true, updatedPosition);
+
+        }
+        return ApiResponse.response("Please provide valid postion details", false, null);
+
     }
 }

@@ -1,8 +1,10 @@
 package com.example.candiatePosition.dto;
 
+import com.example.candiatePosition.anotation.CheckAge;
 import com.example.candiatePosition.anotation.NullOrNotBlank;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class CandidateRequestDto {
@@ -37,6 +39,10 @@ public class CandidateRequestDto {
 
     @JsonProperty("positionIds")
     public List<Long> positionIds;
+
+    @JsonProperty("candidateDateOfBirth")
+    @CheckAge
+    public LocalDate dateOfBirth;
 
     public List<Long> positionIds() {
         return positionIds;

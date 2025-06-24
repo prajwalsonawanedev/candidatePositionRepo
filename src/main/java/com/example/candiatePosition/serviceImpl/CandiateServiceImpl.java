@@ -2,18 +2,21 @@ package com.example.candiatePosition.serviceImpl;
 
 import com.example.candiatePosition.dto.CandidateRequestDto;
 import com.example.candiatePosition.dto.CandidateResponseDto;
-import com.example.candiatePosition.dto.PositionRequestDto;
 import com.example.candiatePosition.entity.Candidate;
 import com.example.candiatePosition.entity.Position;
 import com.example.candiatePosition.exception.ResourceNotFoundException;
 import com.example.candiatePosition.repository.CandidateRepository;
 import com.example.candiatePosition.repository.PositionRepository;
+import com.example.candiatePosition.response.ApiResponse;
 import com.example.candiatePosition.service.CandidateService;
 import com.example.candiatePosition.util.EntityDtoConverter;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,45 +34,105 @@ public class CandiateServiceImpl implements CandidateService {
 
 
     @Override
-    public CandidateResponseDto saveCandidate(CandidateRequestDto candidateDto) {
+    public ApiResponse saveCandidate(CandidateRequestDto candidateDto) {
 
-        List<Long> requestPositionList = candidateDto.positionIds();
+        if (!CollectionUtils.isEmpty(candidateDto.positionIds())) {
 
-        List<Long> existingIds = positionRepository.findExistingPositionIds(requestPositionList);
+            List<Long> existingIds = positionRepository.findExistingPositionIds(candidateDto.positionIds());
 
-        List<Long> missingIds = requestPositionList.stream()
-                .filter(id -> !existingIds.contains(id))
-                .collect(Collectors.toList());
+            List<Long> missingIds = candidateDto.positionIds.stream().filter(id -> !existingIds.contains(id)).collect(Collectors.toList());
 
-        if (!missingIds.isEmpty()) {
-            throw new ResourceNotFoundException("These Position IDs not found: " + missingIds);
+            if (!missingIds.isEmpty()) {
+                throw new ResourceNotFoundException("These Position IDs not found: " + missingIds);
+            }
+            List<Position> positions = positionRepository.findAllById(candidateDto.positionIds);
+
+            Candidate candidate = entityDtoConverter.convert(candidateDto, Candidate.class);
+
+            candidate.setPositions(positions);
+
+            Candidate candidateResult = candidateRepository.save(candidate);
+
+            if (!ObjectUtils.isEmpty(candidateResult)) {
+                return ApiResponse.response("Candidate Details Saved Successfully", true, candidateResult);
+            }
         }
-        List<Position> positions = positionRepository.findAllById(requestPositionList);
-
-        Candidate candidate = entityDtoConverter.convert(candidateDto, Candidate.class);
-
-        candidate.setPositions(positions);
-
-        Candidate candidateResult = candidateRepository.save(candidate);
-
-        if (!ObjectUtils.isEmpty(candidateResult)) {
-            return entityDtoConverter.convert(candidateResult, CandidateResponseDto.class);
-        }
-        return null;
+        return ApiResponse.response("Unable to save Candidate Details", true, null);
     }
 
     @Override
-    public CandidateResponseDto getCandidateById(Long candidateId) {
-        return candidateRepository.findById(candidateId)
+    public ApiResponse getCandidateById(Long candidateId) {
+        CandidateResponseDto candidateResponseDto = candidateRepository.findById(candidateId)
                 .map(candidate -> entityDtoConverter.convert(candidate, CandidateResponseDto.class))
                 .orElseThrow(() -> new ResourceNotFoundException("Candidate Details Not found with Id :" + candidateId));
+
+        if (!ObjectUtils.isEmpty(candidateResponseDto)) {
+            return ApiResponse.response("Candidate Details Found", true, candidateResponseDto);
+        }
+        return ApiResponse.response("Candidate Details Not Found", false, candidateResponseDto);
     }
 
     @Override
-    public List<CandidateResponseDto> getAllCandiates() {
-        return candidateRepository.findAll()
+    public ApiResponse getAllCandiates() {
+        List<CandidateResponseDto> candidateResponseDtoList = candidateRepository.findAll()
                 .stream()
-                .map(candidate -> entityDtoConverter.convert(candidate, CandidateResponseDto.class))
-                .toList();
+                .map(candidate -> entityDtoConverter.convert(candidate, CandidateResponseDto.class)).toList();
+
+        if (!CollectionUtils.isEmpty(candidateResponseDtoList)) {
+            return ApiResponse.response("Candidate Details Found", true, candidateResponseDtoList);
+        }
+
+        return ApiResponse.response("Candidate Details Not Found", true, candidateResponseDtoList);
+    }
+
+    @Override
+    public ApiResponse updateCandidateDetails(Long candidateId, CandidateRequestDto candidateRequestDto) {
+        Candidate candidate = candidateRepository.findById(candidateId)
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate Details not found for this Id :" + candidateId));
+
+        if (!Objects.isNull(candidateRequestDto)) {
+
+            if (!StringUtils.isEmpty(candidateRequestDto.name)) {
+                candidate.setName(candidateRequestDto.getName());
+            }
+            if (!StringUtils.isEmpty(candidateRequestDto.mobileNumber)) {
+                candidate.setMobileNumber(candidateRequestDto.getMobileNumber());
+            }
+            if (!StringUtils.isEmpty(candidateRequestDto.age)) {
+                candidate.setAge(candidateRequestDto.getAge().toString());
+            }
+            if (!StringUtils.isEmpty(candidateRequestDto.city)) {
+                candidate.setCity(candidateRequestDto.getCity());
+            }
+            if (!StringUtils.isEmpty(candidateRequestDto.emailId)) {
+                candidate.setEmailId(candidateRequestDto.getEmailId());
+            }
+            if (!StringUtils.isEmpty(candidateRequestDto.previousOrganizationName)) {
+                candidate.setPreviousOrganizationName(candidateRequestDto.getPreviousOrganizationName());
+            }
+            if (!Objects.isNull(candidateRequestDto.getTotalYearsOfExperience())) {
+                candidate.setTotalYearsOfExperience(candidateRequestDto.getTotalYearsOfExperience());
+            }
+            if (!Objects.isNull(candidateRequestDto.isCandidateExperienced)) {
+                candidate.setCandidateExperienced(candidateRequestDto.isCandidateExperienced);
+            }
+
+            Candidate updatedCandidate = candidateRepository.save(candidate);
+            return ApiResponse.response("Candidate Details Update Sucessfully ", true, updatedCandidate);
+        }
+
+        return ApiResponse.response("Please provide valid candidate details", false, null);
+
+    }
+
+    @Override
+    public ApiResponse deleteCandidateByid(Long candidateId) {
+
+        try {
+            candidateRepository.deleteById(candidateId);
+        } catch (Exception exception) {
+            throw new ResourceNotFoundException("Please provide valid candidate Id :" + candidateId);
+        }
+        return ApiResponse.response("Candidate Details Deleted sucessfully :" + candidateId, true, null);
     }
 }
