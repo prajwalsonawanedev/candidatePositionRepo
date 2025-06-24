@@ -3,8 +3,6 @@ package com.example.candiatePosition.service;
 import com.example.candiatePosition.dto.PositionRequestDto;
 import com.example.candiatePosition.response.ApiResponse;
 
-import java.util.List;
-
 public interface PositionService {
 
     ApiResponse savePosition(PositionRequestDto positionDto);

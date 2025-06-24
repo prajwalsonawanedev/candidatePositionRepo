@@ -19,5 +19,5 @@ public class CandidateResponseDto {
 
     public String previousOrganizationName;
 
-    public List<PositionRequestDto> positionList;
+    public List<Long> positionList;
 }

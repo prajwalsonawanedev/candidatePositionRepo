@@ -1,11 +1,13 @@
 package com.example.candiatePosition.controller;
 
 import com.example.candiatePosition.dto.CandidateRequestDto;
+import com.example.candiatePosition.dto.CandidateResponseDto;
 import com.example.candiatePosition.response.ApiResponse;
 import com.example.candiatePosition.service.CandidateService;
 import com.example.candiatePosition.util.ObjectConverter;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,26 +26,22 @@ public class CandidateController {
 
     @PostMapping("/saveCandidateDetails")
     public ResponseEntity<ApiResponse> saveCandidateDetails(@RequestBody @Valid CandidateRequestDto candidateRequestDto) {
-        ApiResponse apiResponse = candidateService.saveCandidate(candidateRequestDto);
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return new ResponseEntity<>(candidateService.saveCandidate(candidateRequestDto), HttpStatus.OK);
     }
 
-    @GetMapping("/getCandidateDetailsById")
-    public ResponseEntity<ApiResponse> getCandidateDetails(@RequestParam Long candidateId) {
-        ApiResponse apiResponse = candidateService.getCandidateById(candidateId);
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    @GetMapping(value = "/getCandidateDetailsById", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ApiResponse<CandidateResponseDto>> getCandidateDetails(@RequestParam Long candidateId) {
+        return new ResponseEntity<>(candidateService.getCandidateById(candidateId), HttpStatus.OK);
     }
 
     @GetMapping("/getAllCandidateDetails")
     public ResponseEntity<ApiResponse> getAllCandidateDetails() {
-        ApiResponse apiResponse = candidateService.getAllCandiates();
-        return new ResponseEntity<>(apiResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(candidateService.getAllCandiates(), HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteCandidateDetails")
     public ResponseEntity<ApiResponse> deleteCandidateDetails(@RequestParam Long candidateId) {
-        ApiResponse apiResponse = candidateService.deleteCandidateByid(candidateId);
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return new ResponseEntity<>(candidateService.deleteCandidateByid(candidateId), HttpStatus.OK);
     }
 
     @PatchMapping("/updateCandidateDetails")
