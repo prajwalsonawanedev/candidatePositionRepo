@@ -25,26 +25,22 @@ public class PositionController {
 
     @PostMapping("/savePosition")
     public ResponseEntity<ApiResponse> savePosition(@RequestBody @Valid PositionRequestDto positionDto) {
-        ApiResponse apiResponse = positionService.savePosition(positionDto);
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return new ResponseEntity<>(positionService.savePosition(positionDto), HttpStatus.OK);
     }
 
     @GetMapping("/getPositionById")
     public ResponseEntity<ApiResponse> getPositionById(@RequestParam Long positionId) {
-        ApiResponse apiResponse = positionService.getPositionById(positionId);
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return new ResponseEntity<>(positionService.getPositionById(positionId), HttpStatus.OK);
     }
 
     @GetMapping("/getAllPositions")
     public ResponseEntity<ApiResponse> getAllPositions() {
-        ApiResponse apiResponse = positionService.getAllPositions();
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return new ResponseEntity<>(positionService.getAllPositions(), HttpStatus.OK);
     }
 
     @DeleteMapping("/deleteById")
     public ResponseEntity<ApiResponse> deleteById(@RequestParam Long postionId) {
-        ApiResponse apiResponse = positionService.deleteById(postionId);
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return new ResponseEntity<>(positionService.deleteById(postionId), HttpStatus.OK);
     }
 
     @PatchMapping("/updatePositionDetails")

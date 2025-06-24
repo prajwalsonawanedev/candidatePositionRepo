@@ -3,10 +3,16 @@ package com.example.candiatePosition.dto;
 import com.example.candiatePosition.anotation.CheckAge;
 import com.example.candiatePosition.anotation.NullOrNotBlank;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CandidateRequestDto {
 
     public Long candidateId;
@@ -19,7 +25,7 @@ public class CandidateRequestDto {
     public String mobileNumber;
 
     @JsonProperty("candidateEmailId")
-    @NullOrNotBlank(isMandatory = "yes")
+    @NullOrNotBlank(isMandatory = "yes", isEmail = "yes", message = "Please provide valid Email address")
     public String emailId;
 
     @JsonProperty("candidateIsExperienced")

@@ -2,6 +2,7 @@ package com.example.candiatePosition.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
@@ -16,6 +17,7 @@ import java.util.List;
                 @UniqueConstraint(columnNames = {"email_id"})
         }
 )
+@Builder
 public class Candidate {
 
     @Id

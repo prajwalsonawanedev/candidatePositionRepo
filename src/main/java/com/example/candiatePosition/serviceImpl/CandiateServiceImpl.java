@@ -5,6 +5,7 @@ import com.example.candiatePosition.dto.CandidateResponseDto;
 import com.example.candiatePosition.entity.Candidate;
 import com.example.candiatePosition.entity.Position;
 import com.example.candiatePosition.exception.ResourceNotFoundException;
+import com.example.candiatePosition.mapper.CandidateMapper;
 import com.example.candiatePosition.repository.CandidateRepository;
 import com.example.candiatePosition.repository.PositionRepository;
 import com.example.candiatePosition.response.ApiResponse;
@@ -25,11 +26,13 @@ public class CandiateServiceImpl implements CandidateService {
     private final CandidateRepository candidateRepository;
     private final EntityDtoConverter entityDtoConverter;
     private final PositionRepository positionRepository;
+    private final CandidateMapper candidateMapper;
 
-    public CandiateServiceImpl(CandidateRepository candidateRepository, EntityDtoConverter entityDtoConverter, PositionRepository positionRepository) {
+    public CandiateServiceImpl(CandidateRepository candidateRepository, EntityDtoConverter entityDtoConverter, PositionRepository positionRepository, CandidateMapper candidateMapper) {
         this.candidateRepository = candidateRepository;
         this.entityDtoConverter = entityDtoConverter;
         this.positionRepository = positionRepository;
+        this.candidateMapper = candidateMapper;
     }
 
 
@@ -47,7 +50,7 @@ public class CandiateServiceImpl implements CandidateService {
             }
             List<Position> positions = positionRepository.findAllById(candidateDto.positionIds);
 
-            Candidate candidate = entityDtoConverter.convert(candidateDto, Candidate.class);
+            Candidate candidate = candidateMapper.toEntity(candidateDto);
 
             candidate.setPositions(positions);
 
@@ -61,9 +64,10 @@ public class CandiateServiceImpl implements CandidateService {
     }
 
     @Override
-    public ApiResponse getCandidateById(Long candidateId) {
+    public ApiResponse<CandidateResponseDto> getCandidateById(Long candidateId) {
+
         CandidateResponseDto candidateResponseDto = candidateRepository.findById(candidateId)
-                .map(candidate -> entityDtoConverter.convert(candidate, CandidateResponseDto.class))
+                .map(candidate -> candidateMapper.fromEntity(candidate))
                 .orElseThrow(() -> new ResourceNotFoundException("Candidate Details Not found with Id :" + candidateId));
 
         if (!ObjectUtils.isEmpty(candidateResponseDto)) {
@@ -74,9 +78,11 @@ public class CandiateServiceImpl implements CandidateService {
 
     @Override
     public ApiResponse getAllCandiates() {
+
         List<CandidateResponseDto> candidateResponseDtoList = candidateRepository.findAll()
                 .stream()
-                .map(candidate -> entityDtoConverter.convert(candidate, CandidateResponseDto.class)).toList();
+                .map(candidate -> candidateMapper.fromEntity(candidate)).toList();
+
 
         if (!CollectionUtils.isEmpty(candidateResponseDtoList)) {
             return ApiResponse.response("Candidate Details Found", true, candidateResponseDtoList);
@@ -118,7 +124,8 @@ public class CandiateServiceImpl implements CandidateService {
             }
 
             Candidate updatedCandidate = candidateRepository.save(candidate);
-            return ApiResponse.response("Candidate Details Update Sucessfully ", true, updatedCandidate);
+
+            return ApiResponse.response("Candidate Details Update Sucessfully ", true, candidateMapper.fromEntity(updatedCandidate));
         }
 
         return ApiResponse.response("Please provide valid candidate details", false, null);

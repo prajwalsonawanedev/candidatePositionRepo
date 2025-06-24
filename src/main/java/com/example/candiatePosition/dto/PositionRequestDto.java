@@ -4,10 +4,12 @@ import com.example.candiatePosition.anotation.NullOrNotBlank;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
 @AllArgsConstructor
 @RequiredArgsConstructor
+@Builder
 public class PositionRequestDto {
 
     public Long positionId;

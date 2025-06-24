@@ -4,6 +4,7 @@ import com.example.candiatePosition.dto.PositionRequestDto;
 import com.example.candiatePosition.dto.PositionResponseDto;
 import com.example.candiatePosition.entity.Position;
 import com.example.candiatePosition.exception.ResourceNotFoundException;
+import com.example.candiatePosition.mapper.PosititonMapper;
 import com.example.candiatePosition.repository.PositionRepository;
 import com.example.candiatePosition.response.ApiResponse;
 import com.example.candiatePosition.service.PositionService;
@@ -23,18 +24,21 @@ public class PositionServiceImpl implements PositionService {
 
     private final EntityDtoConverter entityDtoConverter;
 
-    public PositionServiceImpl(PositionRepository positionRepository, EntityDtoConverter entityDtoConverter) {
+    private final PosititonMapper posititonMapper;
+
+    public PositionServiceImpl(PositionRepository positionRepository, EntityDtoConverter entityDtoConverter, PosititonMapper posititonMapper) {
         this.positionRepository = positionRepository;
         this.entityDtoConverter = entityDtoConverter;
+        this.posititonMapper = posititonMapper;
     }
 
     @Override
-    public ApiResponse savePosition(PositionRequestDto positionDto) {
-        Position position = entityDtoConverter.convert(positionDto, Position.class);
+    public ApiResponse savePosition(PositionRequestDto positionRequestDto) {
+        Position position = posititonMapper.toEntity(positionRequestDto);
 
         if (!ObjectUtils.isEmpty(position)) {
             try {
-                PositionResponseDto positionResponseDto = entityDtoConverter.convert(positionRepository.save(position), PositionResponseDto.class);
+                PositionResponseDto positionResponseDto = posititonMapper.fromEntity(positionRepository.save(position));
                 return ApiResponse.response("Position Created Successfully", true, positionResponseDto);
             } catch (Exception exception) {
                 throw new RuntimeException("Please Provide Valid position name");
@@ -46,7 +50,7 @@ public class PositionServiceImpl implements PositionService {
     @Override
     public ApiResponse getPositionById(Long positionId) {
         PositionResponseDto positionResponseDto = positionRepository.findById(positionId)
-                .map(position -> entityDtoConverter.convert(position, PositionResponseDto.class))
+                .map(position -> posititonMapper.fromEntity(position))
                 .orElseThrow(() -> new ResourceNotFoundException("Position Not found with Position Id :" + positionId));
 
         if (!Objects.isNull(positionResponseDto)) {
@@ -59,7 +63,7 @@ public class PositionServiceImpl implements PositionService {
     public ApiResponse getAllPositions() {
         List<PositionResponseDto> positionResponseDtoList = positionRepository.findAll()
                 .stream()
-                .map(position -> entityDtoConverter.convert(position, PositionResponseDto.class))
+                .map(position -> posititonMapper.fromEntity(position))
                 .toList();
 
         if (!CollectionUtils.isEmpty(positionResponseDtoList)) {
