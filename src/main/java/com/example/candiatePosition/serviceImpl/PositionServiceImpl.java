@@ -102,19 +102,19 @@ public class PositionServiceImpl implements PositionService {
             Position positionResult = positionRepository.findById(positionId)
                     .orElseThrow(() -> new ResourceNotFoundException("Position Details not found for this position Id : " + positionId));
 
-            if (!StringUtils.isEmpty(positionDto.name)) {
+            if (StringUtils.hasText(positionDto.name)) {
                 positionResult.setName(positionDto.name);
             }
-            if (!StringUtils.isEmpty(positionDto.description)) {
+            if (StringUtils.hasText(positionDto.description)) {
                 positionResult.setDescription(positionDto.description);
             }
-            if (!StringUtils.isEmpty(positionDto.location)) {
+            if (StringUtils.hasText(positionDto.location)) {
                 positionResult.setLocation(positionDto.location);
             }
-            if (!StringUtils.isEmpty(positionDto.department)) {
+            if (StringUtils.hasText(positionDto.department)) {
                 positionResult.setDepartment(positionDto.department);
             }
-            if (!StringUtils.isEmpty(positionDto.employementType)) {
+            if (StringUtils.hasText(positionDto.employementType)) {
                 positionResult.setEmployementType(positionDto.employementType);
             }
 
@@ -122,6 +122,7 @@ public class PositionServiceImpl implements PositionService {
             return ApiResponse.response("Position details updated Sucessfully", true, updatedPosition);
 
         }
+
         return ApiResponse.response("Please provide valid postion details", false, null);
 
     }

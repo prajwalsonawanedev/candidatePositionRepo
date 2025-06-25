@@ -94,53 +94,56 @@ public class CandiateServiceImpl implements CandidateService {
 
 
         if (!CollectionUtils.isEmpty(candidateResponseDtoList)) {
-            log.info("Candiadate Details Found : {}", candidateResponseDtoList);
+            log.info("Candidate details found: {}", candidateResponseDtoList);
             return ApiResponse.response("Candidate Details Found", true, candidateResponseDtoList);
         }
 
-        log.info("Candiadate Details Not Found : {}", candidateResponseDtoList);
+        log.info("No candidate details found");
         return ApiResponse.response("Candidate Details Not Found", true, candidateResponseDtoList);
     }
 
     @Override
     public ApiResponse updateCandidateDetails(Long candidateId, CandidateRequestDto candidateRequestDto) {
         Candidate candidate = candidateRepository.findById(candidateId)
-                .orElseThrow(() -> new ResourceNotFoundException("Candidate Details not found for this Id :" + candidateId));
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate Details not found for Id :" + candidateId));
 
-        log.info("Candidate Details Found in database :{}", candidate);
+        log.info("Fetched candidate from database: {}", candidate);
+
         if (!Objects.isNull(candidateRequestDto)) {
 
-            if (!StringUtils.isEmpty(candidateRequestDto.name)) {
+            if (StringUtils.hasText(candidateRequestDto.name)) {
                 candidate.setName(candidateRequestDto.getName());
             }
-            if (!StringUtils.isEmpty(candidateRequestDto.mobileNumber)) {
+
+            if (StringUtils.hasText(candidateRequestDto.mobileNumber)) {
                 candidate.setMobileNumber(candidateRequestDto.getMobileNumber());
             }
-            if (!StringUtils.isEmpty(candidateRequestDto.age)) {
+            if (candidateRequestDto.getAge() != null) {
                 candidate.setAge(candidateRequestDto.getAge().toString());
             }
-            if (!StringUtils.isEmpty(candidateRequestDto.city)) {
+            if (StringUtils.hasText(candidateRequestDto.city)) {
                 candidate.setCity(candidateRequestDto.getCity());
             }
-            if (!StringUtils.isEmpty(candidateRequestDto.emailId)) {
+            if (StringUtils.hasText(candidateRequestDto.emailId)) {
                 candidate.setEmailId(candidateRequestDto.getEmailId());
             }
-            if (!StringUtils.isEmpty(candidateRequestDto.previousOrganizationName)) {
+            if (StringUtils.hasText(candidateRequestDto.previousOrganizationName)) {
                 candidate.setPreviousOrganizationName(candidateRequestDto.getPreviousOrganizationName());
             }
-            if (!Objects.isNull(candidateRequestDto.getTotalYearsOfExperience())) {
+            if (Objects.nonNull(candidateRequestDto.getTotalYearsOfExperience())) {
                 candidate.setTotalYearsOfExperience(candidateRequestDto.getTotalYearsOfExperience());
             }
-            if (!Objects.isNull(candidateRequestDto.isCandidateExperienced)) {
+            if (Objects.nonNull(candidateRequestDto.isCandidateExperienced)) {
                 candidate.setCandidateExperienced(candidateRequestDto.isCandidateExperienced);
             }
 
             Candidate updatedCandidate = candidateRepository.save(candidate);
             log.info("Candiate Details update Successfully :{}", updatedCandidate);
+
             return ApiResponse.response("Candidate Details Update Sucessfully ", true, candidateMapper.fromEntity(updatedCandidate));
         }
-        return ApiResponse.response("Please provide valid candidate details", false, null);
 
+        return ApiResponse.response("Please provide valid candidate details", false, null);
     }
 
     @Override
@@ -148,6 +151,7 @@ public class CandiateServiceImpl implements CandidateService {
 
         try {
             candidateRepository.deleteById(candidateId);
+            log.info("Candidate with ID {} deleted successfully", candidateId);
         } catch (Exception exception) {
             throw new ResourceNotFoundException("Please provide valid candidate Id :" + candidateId);
         }

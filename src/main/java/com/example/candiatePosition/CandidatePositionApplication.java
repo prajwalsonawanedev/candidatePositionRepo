@@ -11,7 +11,6 @@ public class CandidatePositionApplication {
     public static void main(String[] args) {
         SpringApplication.run(CandidatePositionApplication.class, args);
         log.info("Application Started Successfully");
-
     }
 
 }

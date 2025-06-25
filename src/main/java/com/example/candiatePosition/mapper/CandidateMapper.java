@@ -18,8 +18,6 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface CandidateMapper {
 
-    CandidateMapper mapper = Mappers.getMapper(CandidateMapper.class);
-
     @Mapping(source = "positionIds", target = "positions", qualifiedByName = "idsToPositions")
     Candidate toEntity(CandidateRequestDto candidateRequestDto);
 

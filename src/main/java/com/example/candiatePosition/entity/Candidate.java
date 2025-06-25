@@ -34,13 +34,13 @@ public class Candidate {
 
     private String emailId;
 
-    public boolean isCandidateExperienced;
+    private boolean isCandidateExperienced;
 
-    public Integer totalYearsOfExperience;
+    private Integer totalYearsOfExperience;
 
-    public String previousOrganizationName;
+    private String previousOrganizationName;
 
-    public LocalDate dateOfBirth;
+    private LocalDate dateOfBirth;
 
     @ManyToMany
     @JoinTable(
