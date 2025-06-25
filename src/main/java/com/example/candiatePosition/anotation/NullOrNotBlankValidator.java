@@ -3,7 +3,9 @@ package com.example.candiatePosition.anotation;
 import io.micrometer.common.util.StringUtils;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class NullOrNotBlankValidator implements ConstraintValidator<NullOrNotBlank, String> {
     private int min;
     private int max;
@@ -19,7 +21,8 @@ public class NullOrNotBlankValidator implements ConstraintValidator<NullOrNotBla
     }
 
     public boolean isValid(String value, ConstraintValidatorContext context) {
-        System.out.println("inside isValid() of NullOrNotBlank");
+        log.info("inside isValid() of NullOrNotBlank");
+
         if (ValidationUtil.isBlank(value)) {
             return !isMandatory.equalsIgnoreCase("yes");
         }

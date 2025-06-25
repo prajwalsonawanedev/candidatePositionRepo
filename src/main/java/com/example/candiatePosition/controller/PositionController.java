@@ -46,7 +46,6 @@ public class PositionController {
     @PatchMapping("/updatePositionDetails")
     public ResponseEntity<ApiResponse> updatePositionDetails(@RequestParam Long positionId, @RequestBody String payload) {
         PositionRequestDto positionRequestDto = objectConverter.convertToObject(payload, PositionRequestDto.class);
-        ApiResponse apiResponse = positionService.updatePositionDetails(positionId, positionRequestDto);
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        return new ResponseEntity<>(positionService.updatePositionDetails(positionId, positionRequestDto), HttpStatus.OK);
     }
 }
