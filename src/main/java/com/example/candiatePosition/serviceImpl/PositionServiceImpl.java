@@ -9,6 +9,7 @@ import com.example.candiatePosition.repository.PositionRepository;
 import com.example.candiatePosition.response.ApiResponse;
 import com.example.candiatePosition.service.PositionService;
 import com.example.candiatePosition.util.EntityDtoConverter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
@@ -17,6 +18,7 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Service
 public class PositionServiceImpl implements PositionService {
 
@@ -39,8 +41,10 @@ public class PositionServiceImpl implements PositionService {
         if (!ObjectUtils.isEmpty(position)) {
             try {
                 PositionResponseDto positionResponseDto = posititonMapper.fromEntity(positionRepository.save(position));
+                log.info("Position created Successfully: {}", positionResponseDto);
                 return ApiResponse.response("Position Created Successfully", true, positionResponseDto);
             } catch (Exception exception) {
+                log.info("Unable to create position: {}");
                 throw new RuntimeException("Please Provide Valid position name");
             }
         }
@@ -54,8 +58,10 @@ public class PositionServiceImpl implements PositionService {
                 .orElseThrow(() -> new ResourceNotFoundException("Position Not found with Position Id :" + positionId));
 
         if (!Objects.isNull(positionResponseDto)) {
+            log.info("Position Details found : {}", positionResponseDto);
             return ApiResponse.response("Position Details found", true, positionResponseDto);
         }
+        log.info("Position Details Not found : {}", positionResponseDto);
         return ApiResponse.response("Position Details Not found", true, null);
     }
 
@@ -67,9 +73,11 @@ public class PositionServiceImpl implements PositionService {
                 .toList();
 
         if (!CollectionUtils.isEmpty(positionResponseDtoList)) {
+            log.info("Position Details found : {}", positionResponseDtoList);
             return ApiResponse.response("Position Detailsfound", true, positionResponseDtoList);
         }
 
+        log.info("Position Details found : {}", positionResponseDtoList);
         return ApiResponse.response("Position Details Not found", false, null);
     }
 
@@ -78,8 +86,10 @@ public class PositionServiceImpl implements PositionService {
         try {
             positionRepository.deleteById(positionId);
         } catch (Exception exception) {
+            log.info("Unable to delete position Details");
             throw new ResourceNotFoundException("Please provide valid position Id:" + positionId);
         }
+        log.info("Position Details deleted successfully");
         return ApiResponse.response("Succesully deleted record with Id:" + positionId, true, null);
 
     }
